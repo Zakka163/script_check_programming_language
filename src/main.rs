@@ -8,7 +8,6 @@ mod models;
 mod scanner;
 
 use crate::scanner::{Scanner, PathScanner};
-use crate::models::Language;
 
 #[derive(Parser)]
 #[command(name = "langscan", version, about = "A tool to inventory languages and tools", long_about = None)]
@@ -19,21 +18,22 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Scan for languages and tools
+    /// Scan the system for installed programming languages, compilers, and runtimes.
+    #[command(long_about = "Scans common system paths and environment manager directories (NVM, FNM, ASDF) to identify installed programming languages and their versions.")]
     Scan {
-        /// Output format (table, json)
-        #[arg(short, long, default_value = "table")]
+        /// The output format to use.
+        #[arg(short, long, default_value = "table", value_name = "FORMAT", help = "Output format (table, json)")]
         format: String,
 
-        /// Show debug information
-        #[arg(short, long)]
+        /// Enable verbose debug logging to see where the tool is looking.
+        #[arg(short, long, help = "Show detailed search progress and errors")]
         debug: bool,
 
-        /// Sort results (name, size, date, modified). Can be comma-separated.
-        #[arg(short, long)]
+        /// Sort the results by specific fields.
+        #[arg(short, long, value_name = "FIELDS", help = "Sort by: name, size, date, modified (e.g., --sort size,name)")]
         sort: Option<String>,
     },
-    /// Print version information
+    /// Print the tool's version information.
     Version,
 }
 
