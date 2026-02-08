@@ -34,6 +34,16 @@ brew tap Zakka163/homebrew-langscan
 brew install langscan
 ```
 
+### 3. Manual Download (Linux)
+If you don't want to use Homebrew, you can download the binary directly:
+
+```bash
+sudo curl -L \
+https://github.com/Zakka163/homebrew-langscan/releases/latest/download/langscan-linux-amd64 \
+-o /usr/local/bin/langscan
+sudo chmod +x /usr/local/bin/langscan
+```
+
 ### From Source
 
 If you prefer to build it yourself, ensure you have [Rust](https://rustup.rs/) installed:

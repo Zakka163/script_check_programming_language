@@ -47,17 +47,47 @@ impl PathScanner {
             }
         }
 
-        // Try NVM for node
+        // Try common version managers for node
         if cmd == "node" {
             if let Ok(home) = std::env::var("HOME") {
-                let nvm_dir = std::path::Path::new(&home).join(".nvm/versions/node");
+                let home_path = std::path::Path::new(&home);
+                
+                // NVM
+                let nvm_dir = home_path.join(".nvm/versions/node");
                 if nvm_dir.exists() {
-                    // Try to find the latest version or just any version
                     if let Ok(entries) = std::fs::read_dir(nvm_dir) {
                         for entry in entries.flatten() {
                             let bin_path = entry.path().join("bin").join("node");
                             if bin_path.exists() {
                                 self.debug_log(&format!("Found node in NVM path: {}", bin_path.display()));
+                                return Some(bin_path);
+                            }
+                        }
+                    }
+                }
+
+                // FNM
+                let fnm_dir = home_path.join(".local/share/fnm/node-versions");
+                if fnm_dir.exists() {
+                    if let Ok(entries) = std::fs::read_dir(fnm_dir) {
+                        for entry in entries.flatten() {
+                            let bin_path = entry.path().join("installation/bin/node");
+                            if bin_path.exists() {
+                                self.debug_log(&format!("Found node in FNM path: {}", bin_path.display()));
+                                return Some(bin_path);
+                            }
+                        }
+                    }
+                }
+
+                // ASDF
+                let asdf_dir = home_path.join(".asdf/installs/nodejs");
+                if asdf_dir.exists() {
+                    if let Ok(entries) = std::fs::read_dir(asdf_dir) {
+                        for entry in entries.flatten() {
+                            let bin_path = entry.path().join("bin/node");
+                            if bin_path.exists() {
+                                self.debug_log(&format!("Found node in ASDF path: {}", bin_path.display()));
                                 return Some(bin_path);
                             }
                         }
@@ -159,6 +189,11 @@ impl PathScanner {
 
 impl Scanner for PathScanner {
     fn scan(&self) -> Result<Vec<Language>> {
+        if self.debug {
+            if let Ok(path) = std::env::var("PATH") {
+                self.debug_log(&format!("Current PATH: {}", path));
+            }
+        }
         let mut languages = Vec::new();
 
         // Rust
