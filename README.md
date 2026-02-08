@@ -1,18 +1,19 @@
-# LANGSCAN
+# 🔍 LANGSCAN
 
-A high-performance CLI tool to inventory languages, toolchains, and runtimes on your system.
-Built in Rust for speed and reliability.
+A high-performance CLI tool to inventory languages, toolchains, and runtimes on your system. Built in Rust for maximum speed and reliability.
+
+`langscan` helps developers quickly identify what programming environments are installed on their machine, providing versions and absolute paths for each detected language.
 
 ## 🚀 Features
 
-- **Blazing Fast**: Written in Rust for maximum performance and low memory footprint.
-- **Accurate Detection**: Identifies installed languages, versions, and paths.
-- **Flexible Output**: Supports both human-readable ASCII tables and machine-parsable JSON.
-- **Cross-Platform**: Designed for macOS and Linux (Windows support coming).
+- **Blazing Fast**: Native Rust implementation with minimal overhead.
+- **Auto-Detection**: Scans system paths to find installed languages and tools.
+- **Flexible Output**: Choose between pretty ASCII tables for humans or JSON for automation.
+- **Cross-Platform**: Support for macOS (Intel & Apple Silicon) and Linux.
 
 ## 📦 Supported Languages
 
-LangScan currently detects:
+Langscan currently detects the following environments:
 
 - **Rust** (`rustc`)
 - **Go** (`go`)
@@ -24,9 +25,9 @@ LangScan currently detects:
 
 ## 🛠️ Installation
 
-### Homebrew (Recommended for macOS & Linux)
+### Homebrew (macOS & Linux)
 
-You can install `langscan` using Homebrew:
+The easiest way to install `langscan` is through Homebrew:
 
 ```bash
 brew tap Zakka163/homebrew-langscan
@@ -35,67 +36,63 @@ brew install langscan
 
 ### From Source
 
-Ensure you have Rust installed (via [rustup](https://rustup.rs/)).
+If you prefer to build it yourself, ensure you have [Rust](https://rustup.rs/) installed:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Zakka163/homebrew-langscan.git
 cd langscan
 cargo build --release
 ```
 
-The binary will be available at `target/release/langscan`.
+The binary will be located at `target/release/langscan`.
 
 ## 💻 Usage
 
-### Basic Scan (Table Output)
+### Commands
 
-Run a quick scan to see a neat table of installed languages:
+| Command | Alias | Description |
+| :--- | :--- | :--- |
+| `scan` | - | Scan the system for installed languages |
+| `--help` | `-h` | Show help information |
+| `--version` | `-v` | Show version information |
+
+### Examples
+
+#### 1. Basic Scan (Default Table)
+Run a quick scan to see all detected languages in a formatted table:
 
 ```bash
-cargo run -- scan
-# Or if built:
-./target/release/langscan scan
+langscan scan
 ```
 
-**Output Example:**
-
+**Output:**
 ```text
 ┌──────────┬────────────┬──────────────────────────────────────────────────┐
-│ Language ┆ Version    ┆ Path                                             │
-╞══════════╪════════════╪══════════════════════════════════════════════════╡
-│ Rust     ┆ 1.91.1     ┆ /Users/mymac/.cargo/bin/rustc                    │
-├╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
-│ Python   ┆ 3.13.5     ┆ /usr/local/bin/python3                           │
-├╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
-│ Node.js  ┆ 23.8.0     ┆ /Users/mymac/.nvm/versions/node/v23.8.0/bin/node │
+│ Language │ Version    │ Path                                             │
+├──────────┼────────────┼──────────────────────────────────────────────────┤
+│ Rust     │ 1.82.0     │ /Users/user/.cargo/bin/rustc                     │
+├──────────┼────────────┼──────────────────────────────────────────────────┤
+│ Python   │ 3.12.3     │ /usr/local/bin/python3                           │
+├──────────┼────────────┼──────────────────────────────────────────────────┤
+│ Node.js  │ 22.5.1     │ /usr/local/bin/node                              │
 └──────────┴────────────┴──────────────────────────────────────────────────┘
 ```
 
-### JSON Output (For Integrations)
-
-Generate a JSON output for use in scripts, CI/CD pipelines, or other tools.
+#### 2. JSON Output
+Generate a machine-parsable JSON output, perfect for scripts or integration with other tools:
 
 ```bash
-cargo run -- scan --format json
+langscan scan --format json
 ```
 
-**Output Example:**
-
+**Output:**
 ```json
 [
   {
     "name": "Rust",
-    "version": "1.91.1",
+    "version": "1.82.0",
     "toolchain": {
-      "path": "/Users/mymac/.cargo/bin/rustc",
-      "components": [
-        {
-          "name": "rustc",
-          "version": "1.91.1",
-          "path": "/Users/mymac/.cargo/bin/rustc",
-          "kind": "Compiler"
-        }
-      ]
+      "path": "/Users/user/.cargo/bin/rustc"
     }
   }
 ]
@@ -103,17 +100,8 @@ cargo run -- scan --format json
 
 ## ❓ Troubleshooting
 
-### "failed to join paths" Error (macOS)
-
-If you see an error like:
-```text
-error: failed to join paths from `$DYLD_FALLBACK_LIBRARY_PATH` together ... Caused by: path segment contains separator `:`
-```
-
-This occurs if your project path contains a colon (`:`).
-
-**Solution:**
-Set `CARGO_TARGET_DIR` to a safe location:
+### "failed to join paths" (macOS)
+If you encounter errors related to `$DYLD_FALLBACK_LIBRARY_PATH` containing a colon, set a custom target directory:
 
 ```bash
 CARGO_TARGET_DIR=/tmp/langscan_target cargo run -- scan
@@ -121,4 +109,4 @@ CARGO_TARGET_DIR=/tmp/langscan_target cargo run -- scan
 
 ---
 
-Made with ❤️ by zakka163
+Made with ❤️ by [zakka163](https://github.com/Zakka163)
