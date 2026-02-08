@@ -24,6 +24,15 @@ LangScan currently detects:
 
 ## 🛠️ Installation
 
+### Homebrew (Recommended for macOS & Linux)
+
+You can install `langscan` using Homebrew:
+
+```bash
+brew tap Zakka163/script_check_programming_language
+brew install langscan
+```
+
 ### From Source
 
 Ensure you have Rust installed (via [rustup](https://rustup.rs/)).
