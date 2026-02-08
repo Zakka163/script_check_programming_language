@@ -29,7 +29,7 @@ LangScan currently detects:
 You can install `langscan` using Homebrew:
 
 ```bash
-brew tap Zakka163/script_check_programming_language
+brew tap Zakka163/homebrew-langscan
 brew install langscan
 ```
 
