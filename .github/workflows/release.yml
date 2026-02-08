@@ -28,7 +28,7 @@ jobs:
       - name: Set version from git tag
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          perl -i -pe "s/^version = \".*\"/version = \"$VERSION\"/ if !\$done++" Cargo.toml
+          perl -i -pe "s/^version = \".*\"/version = \"$VERSION\"/ if /^version = \".*\"/ && !\$done++" Cargo.toml
           cat Cargo.toml
 
       - name: Install Rust
@@ -87,7 +87,7 @@ jobs:
           REPO="${GITHUB_REPOSITORY}"
           
           # Update Cargo.toml version
-          perl -i -pe "s/^version = \".*\"/version = \"$VERSION\"/ if !\$done++" Cargo.toml
+          perl -i -pe "s/^version = \".*\"/version = \"$VERSION\"/ if /^version = \".*\"/ && !\$done++" Cargo.toml
 
           # Update Homebrew Formula
           SHA_LINUX=$(sha256sum artifacts/langscan-linux-amd64/langscan-linux-amd64 | awk '{print $1}')
@@ -96,14 +96,18 @@ jobs:
 
           sed -i "s/version \".*\"/version \"$VERSION\"/" Formula/langscan.rb
 
+          # Use a more reliable way to update specific platform URLs and SHAs
+          # Update Linux
+          sed -i "/langscan-linux-amd64\"/{n;s/sha256 \".*\"/sha256 \"$SHA_LINUX\"/;}" Formula/langscan.rb
           sed -i "s|url \".*langscan-linux-amd64\"|url \"https://github.com/$REPO/releases/download/v$VERSION/langscan-linux-amd64\"|" Formula/langscan.rb
-          sed -i "s/sha256 \".*\"/sha256 \"$SHA_LINUX\"/1" Formula/langscan.rb
 
+          # Update macOS Intel
+          sed -i "/langscan-macos-amd64\"/{n;s/sha256 \".*\"/sha256 \"$SHA_MAC_AMD\"/;}" Formula/langscan.rb
           sed -i "s|url \".*langscan-macos-amd64\"|url \"https://github.com/$REPO/releases/download/v$VERSION/langscan-macos-amd64\"|" Formula/langscan.rb
-          sed -i "s/sha256 \".*\"/sha256 \"$SHA_MAC_AMD\"/2" Formula/langscan.rb
 
+          # Update macOS ARM
+          sed -i "/langscan-macos-arm64\"/{n;s/sha256 \".*\"/sha256 \"$SHA_MAC_ARM\"/;}" Formula/langscan.rb
           sed -i "s|url \".*langscan-macos-arm64\"|url \"https://github.com/$REPO/releases/download/v$VERSION/langscan-macos-arm64\"|" Formula/langscan.rb
-          sed -i "s/sha256 \".*\"/sha256 \"$SHA_MAC_ARM\"/3" Formula/langscan.rb
 
           sed -i "s|homepage \".*\"|homepage \"https://github.com/$REPO\"|" Formula/langscan.rb
 
