@@ -28,7 +28,7 @@ jobs:
       - name: Set version from git tag
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          sed -i "0,/^version = \".*\"/s//version = \"$VERSION\"/" Cargo.toml
+          perl -i -pe "s/^version = \".*\"/version = \"$VERSION\"/ if !\$done++" Cargo.toml
           cat Cargo.toml
 
       - name: Install Rust
